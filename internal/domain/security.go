@@ -5,7 +5,7 @@ type PasswordHasher interface {
 	Compare(password, hashedPassword string) error
 }
 
-type TokenIssuer[ClaimsType any] interface {
-	CreateToken(data ClaimsType) (string, error)
-	DecodeToken(token string) (ClaimsType, error)
+type TokenIssuer[ClaimsT any] interface {
+	Create(data ClaimsT) (string, error)
+	Decode(token string) (ClaimsT, error)
 }

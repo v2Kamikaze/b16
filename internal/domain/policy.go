@@ -10,13 +10,13 @@ type Policy[T any] interface {
 
 func WithPolicy[T any](handler AuthHandler[T], policy Policy[T]) AuthHandler[T] {
 
-	return func(w http.ResponseWriter, r *http.Request, cred UserCredentials[T]) {
+	return func(w http.ResponseWriter, r *http.Request, credentials UserCredentials[T]) {
 
-		if err := policy.Check(cred); err != nil {
+		if err := policy.Check(credentials); err != nil {
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
 
-		handler(w, r, cred)
+		handler(w, r, credentials)
 	}
 }

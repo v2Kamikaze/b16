@@ -30,7 +30,7 @@ func NewJwtIssuer(secretKey []byte) domain.TokenIssuer[*Claims] {
 	}
 }
 
-func (j *JwtIssuer) CreateToken(claims *Claims) (string, error) {
+func (j *JwtIssuer) Create(claims *Claims) (string, error) {
 	token := jwt.NewWithClaims(j.signingMethod, claims)
 
 	signedToken, err := token.SignedString(j.secretKey)
@@ -41,7 +41,7 @@ func (j *JwtIssuer) CreateToken(claims *Claims) (string, error) {
 	return signedToken, nil
 }
 
-func (j *JwtIssuer) DecodeToken(rawToken string) (*Claims, error) {
+func (j *JwtIssuer) Decode(rawToken string) (*Claims, error) {
 	claims := &Claims{}
 
 	token, err := jwt.ParseWithClaims(rawToken, claims, func(token *jwt.Token) (any, error) {

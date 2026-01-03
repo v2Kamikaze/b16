@@ -9,18 +9,20 @@ import (
 )
 
 type RequireRole struct {
-	role string
+	roles []string
 }
 
-func RequireRolePolicy(role string) domain.Policy[*manager.TokenCredentials] {
-	return &RequireRole{role: role}
+func RequireRolePolicy(roles ...string) domain.Policy[*manager.TokenCredentials] {
+	return &RequireRole{roles: roles}
 }
 
-func (p *RequireRole) Check(cred domain.UserCredentials[*manager.TokenCredentials]) error {
+func (p *RequireRole) Check(credentials domain.UserCredentials[*manager.TokenCredentials]) error {
 
-	if slices.Contains(cred.GetCredentials().Roles, p.role) {
-		return nil
+	for _, role := range p.roles {
+		if !slices.Contains(credentials.Principal().Roles, role) {
+			return auth.ErrForbidden
+		}
 	}
 
-	return auth.ErrForbidden
+	return nil
 }

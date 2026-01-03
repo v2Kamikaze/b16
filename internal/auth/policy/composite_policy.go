@@ -15,9 +15,9 @@ func NewCompositePolicy[T any](policies ...domain.Policy[T]) domain.Policy[T] {
 	return &CompositePolicy[T]{policies: policies}
 }
 
-func (a *CompositePolicy[T]) Check(cred domain.UserCredentials[T]) error {
+func (a *CompositePolicy[T]) Check(credentials domain.UserCredentials[T]) error {
 	for _, p := range a.policies {
-		if err := p.Check(cred); err != nil {
+		if err := p.Check(credentials); err != nil {
 			return err
 		}
 	}

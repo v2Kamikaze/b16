@@ -5,14 +5,14 @@ import (
 )
 
 type UserCredentials[T any] interface {
-	GetCredentials() T
+	Principal() T
 }
 
 type AuthManager[T any] interface {
 	Authenticate(req *http.Request) (UserCredentials[T], error)
 }
 
-type AuthHandler[T any] func(w http.ResponseWriter, r *http.Request, cred UserCredentials[T])
+type AuthHandler[T any] func(w http.ResponseWriter, r *http.Request, credentials UserCredentials[T])
 
 func Auth[T any](manager AuthManager[T], handler AuthHandler[T]) http.HandlerFunc {
 

@@ -26,7 +26,7 @@ type BasicAuthCredentials struct {
 	Password string
 }
 
-func (m *BasicAuthCredentials) GetCredentials() *BasicAuthCredentials {
+func (m *BasicAuthCredentials) Principal() *BasicAuthCredentials {
 	return m
 }
 

@@ -23,7 +23,7 @@ type TokenCredentials struct {
 	*security.Claims
 }
 
-func (c *TokenCredentials) GetCredentials() *TokenCredentials {
+func (c *TokenCredentials) Principal() *TokenCredentials {
 	return c
 }
 
@@ -39,7 +39,7 @@ func (m *TokenAuthManager) Authenticate(req *http.Request) (domain.UserCredentia
 		return nil, auth.ErrTokenMissing
 	}
 
-	claims, err := m.jwtIssuer.DecodeToken(token)
+	claims, err := m.jwtIssuer.Decode(token)
 	if err != nil {
 		return nil, auth.ErrUnauthorized
 	}

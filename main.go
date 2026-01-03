@@ -11,12 +11,12 @@ import (
 	"github.com/v2code/b16/internal/security"
 )
 
-func BasicAuthHandler(w http.ResponseWriter, r *http.Request, cred domain.UserCredentials[*manager.BasicAuthCredentials]) {
-	fmt.Fprintf(w, "Hello %v", cred.GetCredentials().Username)
+func BasicAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.UserCredentials[*manager.BasicAuthCredentials]) {
+	fmt.Fprintf(w, "Hello %v", credentials.Principal().Username)
 }
 
-func TokenAuthHandler(w http.ResponseWriter, r *http.Request, cred domain.UserCredentials[*manager.TokenCredentials]) {
-	fmt.Fprintf(w, "Hello %v", cred.GetCredentials().Email)
+func TokenAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.UserCredentials[*manager.TokenCredentials]) {
+	fmt.Fprintf(w, "Hello %v", credentials.Principal().Email)
 }
 
 func main() {
@@ -24,17 +24,6 @@ func main() {
 	env := config.LoadEnvironment()
 
 	jwtIssuer := security.NewJwtIssuer(env.TokenAuthEnv.Secret)
-
-	token, err := jwtIssuer.CreateToken(&security.Claims{
-		Email: "email@email.com",
-		Roles: []string{"ADMIN"},
-	})
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Print(token)
 
 	basicAuthManager := manager.NewBasicAuthManager(manager.BasicAuthParams{
 		Username: env.BasicAuthEnv.Username,
@@ -59,7 +48,7 @@ func main() {
 			tokenAuthManager,
 			domain.WithPolicy(
 				TokenAuthHandler,
-				policy.RequireRolePolicy("ADMIN"),
+				policy.RequireRolePolicy("ADMIN", "USER"),
 			),
 		),
 	)

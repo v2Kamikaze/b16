@@ -11,14 +11,16 @@ type database struct {
 	db *sql.DB
 }
 
-const DatabaseTransactionKey = "DatabaseTransactionKey"
+type databaseTransactionKeyType struct{}
+
+var databaseTransactionKey = databaseTransactionKeyType{}
 
 func NewDatabase(db *sql.DB) domain.Database {
 	return &database{db: db}
 }
 
 func (db *database) Executor(ctx context.Context) domain.QueryExecutor {
-	if tx, ok := ctx.Value(DatabaseTransactionKey).(*sql.Tx); ok {
+	if tx, ok := ctx.Value(databaseTransactionKey).(*sql.Tx); ok {
 		return tx
 	}
 	return db.db
@@ -30,7 +32,7 @@ func (db *database) WithTransaction(ctx context.Context, fn domain.TransactionFu
 		return err
 	}
 
-	ctx = context.WithValue(ctx, DatabaseTransactionKey, tx)
+	ctx = context.WithValue(ctx, databaseTransactionKey, tx)
 
 	defer tx.Rollback()
 

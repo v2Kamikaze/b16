@@ -13,7 +13,7 @@ func NewAnyPolicy[T any](policies ...domain.Policy[T]) domain.Policy[T] {
 	return &AnyPolicy[T]{policies: policies}
 }
 
-func (a *AnyPolicy[T]) Check(credentials domain.UserCredentials[T]) error {
+func (a *AnyPolicy[T]) Check(credentials domain.Principal[T]) error {
 	var err error
 
 	for _, p := range a.policies {

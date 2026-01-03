@@ -17,20 +17,20 @@ type BasicAuthParams struct {
 	Password string
 }
 
-func NewBasicAuthManager(params BasicAuthParams) domain.AuthManager[*BasicAuthCredentials] {
+func NewBasicAuthManager(params BasicAuthParams) domain.AuthManager[*BasicAuthPrincipal] {
 	return &BasicAuthManager{username: params.Username, password: params.Password}
 }
 
-type BasicAuthCredentials struct {
+type BasicAuthPrincipal struct {
 	Username string
 	Password string
 }
 
-func (m *BasicAuthCredentials) Principal() *BasicAuthCredentials {
+func (m *BasicAuthPrincipal) Principal() *BasicAuthPrincipal {
 	return m
 }
 
-func (m *BasicAuthManager) Authenticate(req *http.Request) (domain.UserCredentials[*BasicAuthCredentials], error) {
+func (m *BasicAuthManager) Authenticate(req *http.Request) (domain.Principal[*BasicAuthPrincipal], error) {
 	username, password, ok := req.BasicAuth()
 	if !ok {
 		return nil, auth.ErrUnauthorized
@@ -40,5 +40,5 @@ func (m *BasicAuthManager) Authenticate(req *http.Request) (domain.UserCredentia
 		return nil, auth.ErrUnauthorized
 	}
 
-	return &BasicAuthCredentials{Username: username, Password: password}, nil
+	return &BasicAuthPrincipal{Username: username, Password: password}, nil
 }

@@ -5,17 +5,18 @@ import (
 	"net/http"
 
 	"github.com/v2code/b16/internal/auth/manager"
+	"github.com/v2code/b16/internal/auth/middleware"
 	"github.com/v2code/b16/internal/auth/policy"
 	"github.com/v2code/b16/internal/config"
 	"github.com/v2code/b16/internal/domain"
 	"github.com/v2code/b16/internal/security"
 )
 
-func BasicAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.UserCredentials[*manager.BasicAuthCredentials]) {
+func BasicAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.Principal[*manager.BasicAuthPrincipal]) {
 	fmt.Fprintf(w, "Hello %v", credentials.Principal().Username)
 }
 
-func TokenAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.UserCredentials[*manager.TokenCredentials]) {
+func TokenAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.Principal[*manager.TokenPrincipal]) {
 	fmt.Fprintf(w, "Hello %v", credentials.Principal().Email)
 }
 
@@ -36,7 +37,7 @@ func main() {
 
 	mux.HandleFunc(
 		"GET /basic-auth",
-		domain.Auth(
+		middleware.WithAuth(
 			basicAuthManager,
 			BasicAuthHandler,
 		),
@@ -44,11 +45,13 @@ func main() {
 
 	mux.HandleFunc(
 		"GET /token-auth",
-		domain.Auth(
+		middleware.WithAuth(
 			tokenAuthManager,
-			domain.WithPolicy(
+			middleware.WithPolicy(
 				TokenAuthHandler,
-				policy.RequireRolePolicy("ADMIN", "USER"),
+				policy.NewAnyPolicy(
+					policy.RequireRolePolicy("ADMIN", "USER"),
+				),
 			),
 		),
 	)

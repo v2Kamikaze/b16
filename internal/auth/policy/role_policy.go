@@ -12,11 +12,11 @@ type RequireRole struct {
 	roles []string
 }
 
-func RequireRolePolicy(roles ...string) domain.Policy[*manager.TokenCredentials] {
+func RequireRolePolicy(roles ...string) domain.Policy[*manager.TokenPrincipal] {
 	return &RequireRole{roles: roles}
 }
 
-func (p *RequireRole) Check(credentials domain.UserCredentials[*manager.TokenCredentials]) error {
+func (p *RequireRole) Check(credentials domain.Principal[*manager.TokenPrincipal]) error {
 
 	for _, role := range p.roles {
 		if !slices.Contains(credentials.Principal().Roles, role) {

@@ -19,15 +19,15 @@ func NewTokenAuthManager(jwtIssuer domain.TokenIssuer[*security.Claims]) *TokenA
 	}
 }
 
-type TokenCredentials struct {
+type TokenPrincipal struct {
 	*security.Claims
 }
 
-func (c *TokenCredentials) Principal() *TokenCredentials {
-	return c
+func (p *TokenPrincipal) Principal() *TokenPrincipal {
+	return p
 }
 
-func (m *TokenAuthManager) Authenticate(req *http.Request) (domain.UserCredentials[*TokenCredentials], error) {
+func (m *TokenAuthManager) Authenticate(req *http.Request) (domain.Principal[*TokenPrincipal], error) {
 
 	authorization := req.Header.Get("Authorization")
 	if authorization == "" {
@@ -44,7 +44,7 @@ func (m *TokenAuthManager) Authenticate(req *http.Request) (domain.UserCredentia
 		return nil, auth.ErrUnauthorized
 	}
 
-	return &TokenCredentials{
+	return &TokenPrincipal{
 		Claims: claims,
 	}, nil
 }

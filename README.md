@@ -46,10 +46,27 @@ b16/
 
 ### Fluxo de Autenticação e Autorização
 
-```
-Request → WithAuth Middleware → AuthManager.Authenticate() → Principal
-                                                                    ↓
-Response ← Handler ← WithPolicy Middleware ← Policy.Check() ←──────┘
+```mermaid
+flowchart LR
+    Req[Request]
+    Res[Response]
+
+    WithAuth[WithAuth Middleware]
+    AuthManager[AuthManager.Authenticate()]
+    Principal[Principal]
+
+    WithPolicy[WithPolicy Middleware]
+    Policy[Policy.Check()]
+    Handler[Handler]
+
+    Req --> WithAuth
+    WithAuth --> AuthManager
+    AuthManager --> Principal
+
+    Principal --> Policy
+    Policy --> WithPolicy
+    WithPolicy --> Handler
+    Handler --> Res
 ```
 
 1. **WithAuth Middleware**: Intercepta a requisição e chama o `AuthManager` para autenticar

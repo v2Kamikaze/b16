@@ -14,7 +14,6 @@
 
 ## Arquitetura
 
-O projeto segue uma arquitetura em camadas com separação clara de responsabilidades:
 
 ```
 b16/
@@ -48,16 +47,16 @@ b16/
 
 ```mermaid
 flowchart LR
-    Req[Request]
-    Res[Response]
+    Req["Request"]
+    Res["Response"]
 
-    WithAuth[WithAuth Middleware]
-    AuthManager[AuthManager.Authenticate()]
-    Principal[Principal]
+    WithAuth["WithAuth Middleware"]
+    AuthManager["AuthManager.Authenticate()"]
+    Principal["Principal"]
 
-    WithPolicy[WithPolicy Middleware]
-    Policy[Policy.Check()]
-    Handler[Handler]
+    WithPolicy["WithPolicy Middleware"]
+    Policy["Policy.Check()"]
+    Handler["Handler"]
 
     Req --> WithAuth
     WithAuth --> AuthManager

@@ -8,12 +8,11 @@ import (
 )
 
 type BasicAuthManager struct {
-	username string
-	password string
+	users map[string]string
 }
 
-func NewBasicAuthManager(username, password string) domain.AuthManager[*BasicAuthPrincipal] {
-	return &BasicAuthManager{username: username, password: password}
+func NewBasicAuthManager(users map[string]string) domain.AuthManager[*BasicAuthPrincipal] {
+	return &BasicAuthManager{users: users}
 }
 
 type BasicAuthPrincipal struct {
@@ -31,7 +30,8 @@ func (m *BasicAuthManager) Authenticate(req *http.Request) (domain.Principal[*Ba
 		return nil, auth.ErrUnauthorized
 	}
 
-	if username != m.username || password != m.password {
+	expectedPassword, exists := m.users[username]
+	if !exists || password != expectedPassword {
 		return nil, auth.ErrUnauthorized
 	}
 

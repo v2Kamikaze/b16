@@ -18,7 +18,10 @@ type TestBasicAuthParams struct {
 }
 
 func TestBasicAuthManager_Authenticate(t *testing.T) {
-	manager := NewBasicAuthManager("admin", "secret")
+	manager := NewBasicAuthManager(map[string]string{
+		"admin": "secret",
+		"user":  "password",
+	})
 
 	cases := []TestBasicAuthParams{
 		{
@@ -34,13 +37,29 @@ func TestBasicAuthManager_Authenticate(t *testing.T) {
 			ExpectedErr: auth.ErrUnauthorized,
 		},
 		{
-			Name: "valid credentials",
+			Name: "valid credentials - admin",
 			SetupRequest: func(r *http.Request) {
 				r.SetBasicAuth("admin", "secret")
 			},
 			ExpectedErr:  nil,
 			ExpectedUser: "admin",
 			ExpectedPass: "secret",
+		},
+		{
+			Name: "valid credentials - user",
+			SetupRequest: func(r *http.Request) {
+				r.SetBasicAuth("user", "password")
+			},
+			ExpectedErr:  nil,
+			ExpectedUser: "user",
+			ExpectedPass: "password",
+		},
+		{
+			Name: "non-existent user",
+			SetupRequest: func(r *http.Request) {
+				r.SetBasicAuth("unknown", "password")
+			},
+			ExpectedErr: auth.ErrUnauthorized,
 		},
 	}
 

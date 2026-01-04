@@ -186,9 +186,12 @@ func (m *MyAuthManager) Authenticate(req *http.Request) (domain.Principal[*MyPri
 
 **Managers Disponíveis:**
 
-- **BasicAuthManager**: Autenticação via HTTP Basic Auth
+- **BasicAuthManager**: Autenticação via HTTP Basic Auth com suporte a múltiplos usuários
   ```go
-  basicAuthManager := manager.NewBasicAuthManager("username", "password")
+  basicAuthManager := manager.NewBasicAuthManager(map[string]string{
+      "admin": "secret",
+      "user":  "password",
+  })
   ```
 
 - **TokenAuthManager**: Autenticação via JWT Bearer Token
@@ -287,7 +290,10 @@ func BasicAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain
 }
 
 func main() {
-    basicAuthManager := manager.NewBasicAuthManager("admin", "password")
+    basicAuthManager := manager.NewBasicAuthManager(map[string]string{
+        "admin": "password",
+        "user":  "secret",
+    })
 
     mux := http.NewServeMux()
     mux.HandleFunc(

@@ -1,6 +1,5 @@
 # B16
 
-Sistema de autenticação e autorização em Go com suporte a múltiplos métodos de autenticação (Basic Auth e Token JWT) e políticas de autorização flexíveis.
 
 ## Índice
 

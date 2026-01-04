@@ -1,6 +1,9 @@
 package policy
 
-import "github.com/v2code/b16/internal/domain"
+import (
+	"github.com/v2code/b16/internal/auth"
+	"github.com/v2code/b16/internal/domain"
+)
 
 type CompositePolicy[T any] struct {
 	policies []domain.Policy[T]
@@ -14,7 +17,7 @@ func (a *CompositePolicy[T]) Check(credentials domain.Principal[T]) error {
 
 	for _, p := range a.policies {
 		if err := p.Check(credentials); err != nil {
-			return err
+			return auth.ErrForbidden
 		}
 	}
 

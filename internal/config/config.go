@@ -1,8 +1,11 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type BasicAuth struct {
@@ -20,6 +23,11 @@ type Environment struct {
 }
 
 func LoadEnvironment() *Environment {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("error while loading env: ", err.Error())
+	}
+
 	env := &Environment{}
 
 	env.BasicAuthEnv = &BasicAuth{

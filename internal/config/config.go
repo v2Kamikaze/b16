@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"strconv"
@@ -9,8 +10,7 @@ import (
 )
 
 type BasicAuth struct {
-	Username string
-	Password string
+	Users map[string]string
 }
 
 type TokenAuth struct {
@@ -31,23 +31,14 @@ func LoadEnvironment() *Environment {
 	env := &Environment{}
 
 	env.BasicAuthEnv = &BasicAuth{
-		Username: GetEnvOrDefault("B16_USERNAME", "admin"),
-		Password: GetEnvOrDefault("B16_PASSWORD", "password"),
+		Users: LoadBasicAuthUsers(),
 	}
 
 	env.TokenAuthEnv = &TokenAuth{
-		Secret: []byte(GetEnvOrDefault("B16_TOKEN_SECRET", "secret")),
+		Secret: []byte(os.Getenv("B16_TOKEN_SECRET")),
 	}
 
 	return env
-}
-
-func GetEnvOrDefault(key string, defaultValue string) string {
-	value := os.Getenv(key)
-	if value == "" {
-		return defaultValue
-	}
-	return value
 }
 
 func ParseInt(value string) int {
@@ -56,4 +47,18 @@ func ParseInt(value string) int {
 		panic(err.Error())
 	}
 	return parsedValue
+}
+
+func LoadBasicAuthUsers() map[string]string {
+	usersJSON := os.Getenv("B16_BASIC_AUTH_USERS")
+	if usersJSON == "" {
+		panic("B16_BASIC_AUTH_USERS environment variable is required")
+	}
+
+	var users map[string]string
+	if err := json.Unmarshal([]byte(usersJSON), &users); err != nil {
+		panic("error parsing B16_BASIC_AUTH_USERS: " + err.Error())
+	}
+
+	return users
 }

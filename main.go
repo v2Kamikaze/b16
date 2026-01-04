@@ -31,9 +31,7 @@ func main() {
 		Issuer:    "b16",
 	})
 
-	basicAuthManager := manager.NewBasicAuthManager(map[string]string{
-		env.BasicAuthEnv.Username: env.BasicAuthEnv.Password,
-	})
+	basicAuthManager := manager.NewBasicAuthManager(env.BasicAuthEnv.Users)
 
 	tokenAuthManager := manager.NewTokenAuthManager(jwtIssuer)
 

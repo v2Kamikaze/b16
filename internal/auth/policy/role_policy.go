@@ -16,10 +16,10 @@ func RequireRolePolicy(roles ...string) domain.Policy[*manager.TokenPrincipal] {
 	return &RequireRole{roles: roles}
 }
 
-func (p *RequireRole) Check(credentials domain.Principal[*manager.TokenPrincipal]) error {
+func (p *RequireRole) Check(principal domain.Principal[*manager.TokenPrincipal]) error {
 
 	for _, role := range p.roles {
-		if !slices.Contains(credentials.Principal().Roles, role) {
+		if !slices.Contains(principal.Principal().Roles, role) {
 			return auth.ErrForbidden
 		}
 	}

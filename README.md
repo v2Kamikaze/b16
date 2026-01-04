@@ -102,7 +102,7 @@ Uma `Policy` define regras de autorização que verificam se um `Principal` tem 
 
 ```go
 type Policy[T any] interface {
-    Check(credentials Principal[T]) error
+    Check(principal Principal[T]) error
 }
 ```
 
@@ -111,7 +111,7 @@ type Policy[T any] interface {
 Um `Handler` é uma função que processa requisições HTTP autenticadas. Recebe o `Principal` como parâmetro.
 
 ```go
-type AuthHandler[T any] func(w http.ResponseWriter, r *http.Request, credentials Principal[T])
+type AuthHandler[T any] func(w http.ResponseWriter, r *http.Request, principal Principal[T])
 ```
 
 ## Como Usar
@@ -141,7 +141,7 @@ func (p *MyPrincipal) Principal() *MyPrincipal {
 
 ### Criando um Manager
 
-Um `Manager` implementa a interface `domain.AuthManager[T]` e é responsável por extrair e validar credenciais da requisição HTTP.
+Um `Manager` implementa a interface `domain.AuthManager[T]` e é responsável por extrair e validar a autenticação da requisição HTTP, retornando um Principal.
 
 **Exemplo - Custom Manager:**
 
@@ -164,13 +164,13 @@ func NewMyAuthManager(apiKey string) domain.AuthManager[*MyPrincipal] {
 }
 
 func (m *MyAuthManager) Authenticate(req *http.Request) (domain.Principal[*MyPrincipal], error) {
-    // Extrai credenciais do header, query params, etc.
+    // Extrai informações do header, query params, etc.
     apiKey := req.Header.Get("X-API-Key")
     if apiKey == "" {
         return nil, auth.ErrUnauthorized
     }
 
-    // Valida as credenciais
+    // Valida a autenticação
     if apiKey != m.apiKey {
         return nil, auth.ErrUnauthorized
     }
@@ -227,8 +227,8 @@ func NewRequireEmailDomainPolicy(domain string) domain.Policy[*manager.TokenPrin
     return &RequireEmailDomain{domain: domain}
 }
 
-func (p *RequireEmailDomain) Check(credentials domain.Principal[*manager.TokenPrincipal]) error {
-    email := credentials.Principal().Email
+func (p *RequireEmailDomain) Check(principal domain.Principal[*manager.TokenPrincipal]) error {
+    email := principal.Principal().Email
     // Verifica se o email termina com o domínio requerido
     if !strings.HasSuffix(email, "@"+p.domain) {
         return auth.ErrForbidden
@@ -267,12 +267,12 @@ Um `Handler` é uma função que processa requisições autenticadas. Recebe o `
 **Exemplo:**
 
 ```go
-func MyHandler(w http.ResponseWriter, r *http.Request, credentials domain.Principal[*manager.MyPrincipal]) {
-    principal := credentials.Principal()
+func MyHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.MyPrincipal]) {
+    p := principal.Principal()
 
     // Acessa os dados do principal
-    userID := principal.UserID
-    username := principal.Username
+    userID := p.UserID
+    username := p.Username
 
     // Processa a requisição
     fmt.Fprintf(w, "Hello %s (ID: %s)", username, userID)
@@ -284,9 +284,9 @@ func MyHandler(w http.ResponseWriter, r *http.Request, credentials domain.Princi
 ### Exemplo 1: Endpoint com Basic Auth
 
 ```go
-func BasicAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.Principal[*manager.BasicAuthPrincipal]) {
-    principal := credentials.Principal()
-    fmt.Fprintf(w, "Hello %s", principal.Username)
+func BasicAuthHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.BasicAuthPrincipal]) {
+    p := principal.Principal()
+    fmt.Fprintf(w, "Hello %s", p.Username)
 }
 
 func main() {
@@ -313,9 +313,9 @@ curl -u admin:password http://localhost:8000/basic-auth
 ### Exemplo 2: Endpoint com Token Auth e Policy de Role
 
 ```go
-func TokenAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.Principal[*manager.TokenPrincipal]) {
-    principal := credentials.Principal()
-    fmt.Fprintf(w, "Hello %s", principal.Email)
+func TokenAuthHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.TokenPrincipal]) {
+    p := principal.Principal()
+    fmt.Fprintf(w, "Hello %s", p.Email)
 }
 
 func main() {

@@ -1,5 +1,5 @@
 package domain
 
 type Policy[T any] interface {
-	Check(credentials Principal[T]) error
+	Check(principal Principal[T]) error
 }

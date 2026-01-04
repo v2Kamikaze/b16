@@ -13,12 +13,12 @@ import (
 	"github.com/v2code/b16/internal/security"
 )
 
-func BasicAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.Principal[*manager.BasicAuthPrincipal]) {
-	fmt.Fprintf(w, "Hello %v", credentials.Principal().Username)
+func BasicAuthHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.BasicAuthPrincipal]) {
+	fmt.Fprintf(w, "Hello %v", principal.Principal().Username)
 }
 
-func TokenAuthHandler(w http.ResponseWriter, r *http.Request, credentials domain.Principal[*manager.TokenPrincipal]) {
-	fmt.Fprintf(w, "Hello %v", credentials.Principal().Email)
+func TokenAuthHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.TokenPrincipal]) {
+	fmt.Fprintf(w, "Hello %v", principal.Principal().Email)
 }
 
 func main() {

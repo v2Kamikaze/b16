@@ -30,14 +30,14 @@ func TestBasicAuthManager_Authenticate(t *testing.T) {
 			ExpectedErr:  auth.ErrUnauthorized,
 		},
 		{
-			Name: "invalid credentials",
+			Name: "invalid principal",
 			SetupRequest: func(r *http.Request) {
 				r.SetBasicAuth("admin", "wrong")
 			},
 			ExpectedErr: auth.ErrUnauthorized,
 		},
 		{
-			Name: "valid credentials - admin",
+			Name: "valid principal - admin",
 			SetupRequest: func(r *http.Request) {
 				r.SetBasicAuth("admin", "secret")
 			},
@@ -46,7 +46,7 @@ func TestBasicAuthManager_Authenticate(t *testing.T) {
 			ExpectedPass: "secret",
 		},
 		{
-			Name: "valid credentials - user",
+			Name: "valid principal - user",
 			SetupRequest: func(r *http.Request) {
 				r.SetBasicAuth("user", "password")
 			},
@@ -68,7 +68,7 @@ func TestBasicAuthManager_Authenticate(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
 			tt.SetupRequest(req)
 
-			cred, err := manager.Authenticate(req)
+			principal, err := manager.Authenticate(req)
 
 			if tt.ExpectedErr != nil {
 				require.ErrorIs(t, err, tt.ExpectedErr)
@@ -76,11 +76,11 @@ func TestBasicAuthManager_Authenticate(t *testing.T) {
 			}
 
 			require.NoError(t, err)
-			require.NotNil(t, cred)
+			require.NotNil(t, principal)
 
-			principal := cred.Principal()
-			require.Equal(t, tt.ExpectedUser, principal.Username)
-			require.Equal(t, tt.ExpectedPass, principal.Password)
+			p := principal.Principal()
+			require.Equal(t, tt.ExpectedUser, p.Username)
+			require.Equal(t, tt.ExpectedPass, p.Password)
 		})
 	}
 }

@@ -12,4 +12,4 @@ type AuthManager[T any] interface {
 	Authenticate(req *http.Request) (Principal[T], error)
 }
 
-type AuthHandler[T any] func(w http.ResponseWriter, r *http.Request, credentials Principal[T])
+type AuthHandler[T any] func(w http.ResponseWriter, r *http.Request, principal Principal[T])

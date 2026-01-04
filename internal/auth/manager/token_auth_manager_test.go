@@ -79,7 +79,7 @@ func TestTokenAuthManager_Authenticate(t *testing.T) {
 				req.Header.Set("Authorization", tt.AuthHeader)
 			}
 
-			cred, err := manager.Authenticate(req)
+			principal, err := manager.Authenticate(req)
 
 			if tt.ExpectErr != nil {
 				require.ErrorIs(t, err, tt.ExpectErr)
@@ -87,11 +87,11 @@ func TestTokenAuthManager_Authenticate(t *testing.T) {
 			}
 
 			require.NoError(t, err)
-			require.NotNil(t, cred)
+			require.NotNil(t, principal)
 
-			principal := cred.Principal()
-			require.Equal(t, tt.ExpectEmail, principal.Email)
-			require.Contains(t, principal.Roles, tt.ExpectRole)
+			p := principal.Principal()
+			require.Equal(t, tt.ExpectEmail, p.Email)
+			require.Contains(t, p.Roles, tt.ExpectRole)
 		})
 	}
 }

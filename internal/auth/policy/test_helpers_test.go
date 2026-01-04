@@ -14,6 +14,6 @@ type fakePolicy[T any] struct {
 	err error
 }
 
-func (p *fakePolicy[T]) Check(credentials domain.Principal[T]) error {
+func (p *fakePolicy[T]) Check(principal domain.Principal[T]) error {
 	return p.err
 }

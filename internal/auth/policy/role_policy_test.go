@@ -49,13 +49,13 @@ func TestRequireRolePolicy_Check(t *testing.T) {
 		t.Run(tt.Name, func(t *testing.T) {
 			policy := RequireRolePolicy(tt.PolicyRoles...)
 
-			credentials := &manager.TokenPrincipal{
+			principal := &manager.TokenPrincipal{
 				Claims: &security.Claims{
 					Roles: tt.UserRoles,
 				},
 			}
 
-			err := policy.Check(credentials)
+			err := policy.Check(principal)
 
 			if tt.ExpectErr != nil {
 				require.ErrorIs(t, err, tt.ExpectErr)

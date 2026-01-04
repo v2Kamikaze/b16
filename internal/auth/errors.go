@@ -6,5 +6,5 @@ import (
 
 var ErrUnauthorized = errors.New("unauthorized")
 var ErrTokenMissing = errors.New("token missing")
-var ErrNoCredentialsFound = errors.New("no credentials found")
+var ErrNoPrincipalFound = errors.New("no principal found")
 var ErrForbidden = errors.New("forbidden")

@@ -13,9 +13,9 @@ func NewAnyPolicy[T any](policies ...domain.Policy[T]) domain.Policy[T] {
 	return &AnyPolicy[T]{policies: policies}
 }
 
-func (a *AnyPolicy[T]) Check(credentials domain.Principal[T]) error {
+func (a *AnyPolicy[T]) Check(principal domain.Principal[T]) error {
 	for _, p := range a.policies {
-		if err := p.Check(credentials); err == nil {
+		if err := p.Check(principal); err == nil {
 			return nil
 		}
 	}

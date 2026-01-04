@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/v2code/b16/internal/auth/manager"
 	"github.com/v2code/b16/internal/auth/middleware"
@@ -24,7 +25,11 @@ func main() {
 
 	env := config.LoadEnvironment()
 
-	jwtIssuer := security.NewJwtIssuer(env.TokenAuthEnv.Secret)
+	jwtIssuer := security.NewJwtIssuer(security.JwtIssuerParams{
+		SecretKey: env.TokenAuthEnv.Secret,
+		ExpireAt:  time.Hour * 2,
+		Issuer:    "b16",
+	})
 
 	basicAuthManager := manager.NewBasicAuthManager(
 		env.BasicAuthEnv.Username,

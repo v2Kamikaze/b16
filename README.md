@@ -2,7 +2,7 @@
 
 Sistema de autenticação e autorização em Go com suporte a múltiplos métodos de autenticação (Basic Auth e Token JWT) e políticas de autorização flexíveis.
 
-## 📋 Índice
+## Índice
 
 - [Arquitetura](#arquitetura)
 - [Conceitos Fundamentais](#conceitos-fundamentais)
@@ -13,7 +13,7 @@ Sistema de autenticação e autorização em Go com suporte a múltiplos método
   - [Criando um Handler](#criando-um-handler)
 - [Exemplos Práticos](#exemplos-práticos)
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 O projeto segue uma arquitetura em camadas com separação clara de responsabilidades:
 
@@ -59,7 +59,7 @@ Response ← Handler ← WithPolicy Middleware ← Policy.Check() ←───�
 4. **Policy**: Verifica se o `Principal` atende aos critérios de autorização
 5. **Handler**: Processa a requisição autenticada e autorizada
 
-## 🎯 Conceitos Fundamentais
+## Conceitos Fundamentais
 
 ### Principal
 
@@ -99,7 +99,7 @@ Um `Handler` é uma função que processa requisições HTTP autenticadas. Receb
 type AuthHandler[T any] func(w http.ResponseWriter, r *http.Request, credentials Principal[T])
 ```
 
-## 🚀 Como Usar
+## Como Usar
 
 ### Criando um Principal
 
@@ -261,7 +261,7 @@ func MyHandler(w http.ResponseWriter, r *http.Request, credentials domain.Princi
 }
 ```
 
-## 📝 Exemplos Práticos
+## Exemplos Práticos
 
 ### Exemplo 1: Endpoint com Basic Auth
 

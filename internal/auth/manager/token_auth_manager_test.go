@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	"github.com/v2code/b16/internal/auth"
 	"github.com/v2code/b16/internal/security"
 )
@@ -22,91 +23,75 @@ func (f *fakeTokenIssuer) Decode(token string) (*security.Claims, error) {
 	return f.claims, f.err
 }
 
-func TestTokenAuthManager_Authenticate(t *testing.T) {
+type TokenAuthTestParams struct {
+	Name        string
+	AuthHeader  string
+	Issuer      *fakeTokenIssuer
+	ExpectErr   error
+	ExpectEmail string
+	ExpectRole  string
+}
 
+func TestTokenAuthManager_Authenticate(t *testing.T) {
 	validClaims := &security.Claims{
 		Email: "admin@email.com",
 		Roles: []string{"ADMIN"},
 	}
 
-	tests := []struct {
-		name        string
-		authHeader  string
-		issuer      *fakeTokenIssuer
-		expectError error
-		expectEmail string
-		expectRole  string
-	}{
+	cases := []TokenAuthTestParams{
 		{
-			name:        "missing authorization header",
-			authHeader:  "",
-			issuer:      &fakeTokenIssuer{},
-			expectError: auth.ErrUnauthorized,
+			Name:       "missing authorization header",
+			AuthHeader: "",
+			Issuer:     &fakeTokenIssuer{},
+			ExpectErr:  auth.ErrUnauthorized,
 		},
 		{
-			name:        "empty bearer token",
-			authHeader:  "Bearer ",
-			issuer:      &fakeTokenIssuer{},
-			expectError: auth.ErrTokenMissing,
+			Name:       "empty bearer token",
+			AuthHeader: "Bearer ",
+			Issuer:     &fakeTokenIssuer{},
+			ExpectErr:  auth.ErrTokenMissing,
 		},
 		{
-			name:       "invalid token",
-			authHeader: "Bearer invalid-token",
-			issuer: &fakeTokenIssuer{
+			Name:       "invalid token",
+			AuthHeader: "Bearer invalid-token",
+			Issuer: &fakeTokenIssuer{
 				err: auth.ErrUnauthorized,
 			},
-			expectError: auth.ErrUnauthorized,
+			ExpectErr: auth.ErrUnauthorized,
 		},
 		{
-			name:       "valid token",
-			authHeader: "Bearer valid-token",
-			issuer: &fakeTokenIssuer{
+			Name:       "valid token",
+			AuthHeader: "Bearer valid-token",
+			Issuer: &fakeTokenIssuer{
 				claims: validClaims,
 			},
-			expectEmail: "admin@email.com",
-			expectRole:  "ADMIN",
+			ExpectEmail: "admin@email.com",
+			ExpectRole:  "ADMIN",
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-
-			manager := NewTokenAuthManager(tt.issuer)
+	for _, tt := range cases {
+		t.Run(tt.Name, func(t *testing.T) {
+			manager := NewTokenAuthManager(tt.Issuer)
 
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
-			if tt.authHeader != "" {
-				req.Header.Set("Authorization", tt.authHeader)
+			if tt.AuthHeader != "" {
+				req.Header.Set("Authorization", tt.AuthHeader)
 			}
 
 			cred, err := manager.Authenticate(req)
 
-			if tt.expectError != nil {
-				if err == nil {
-					t.Fatalf("expected error %v, got nil", tt.expectError)
-				}
-				if err != tt.expectError {
-					t.Fatalf("expected error %v, got %v", tt.expectError, err)
-				}
+			if tt.ExpectErr != nil {
+				require.ErrorIs(t, err, tt.ExpectErr)
 				return
 			}
 
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
-
-			if cred == nil {
-				t.Fatalf("expected credentials, got nil")
-			}
+			require.NoError(t, err)
+			require.NotNil(t, cred)
 
 			principal := cred.Principal()
-
-			if principal.Email != tt.expectEmail {
-				t.Errorf("expected email %q, got %q", tt.expectEmail, principal.Email)
-			}
-
-			if len(principal.Roles) == 0 || principal.Roles[0] != tt.expectRole {
-				t.Errorf("expected role %q, got %v", tt.expectRole, principal.Roles)
-			}
+			require.Equal(t, tt.ExpectEmail, principal.Email)
+			require.Contains(t, principal.Roles, tt.ExpectRole)
 		})
 	}
 }

@@ -26,10 +26,10 @@ func main() {
 
 	jwtIssuer := security.NewJwtIssuer(env.TokenAuthEnv.Secret)
 
-	basicAuthManager := manager.NewBasicAuthManager(manager.BasicAuthParams{
-		Username: env.BasicAuthEnv.Username,
-		Password: env.BasicAuthEnv.Password,
-	})
+	basicAuthManager := manager.NewBasicAuthManager(
+		env.BasicAuthEnv.Username,
+		env.BasicAuthEnv.Password,
+	)
 
 	tokenAuthManager := manager.NewTokenAuthManager(jwtIssuer)
 
@@ -51,6 +51,9 @@ func main() {
 				TokenAuthHandler,
 				policy.NewAnyPolicy(
 					policy.RequireRolePolicy("ADMIN", "USER"),
+					policy.NewCompositePolicy(
+						policy.RequireRolePolicy("ADMIN", "USER"),
+					),
 				),
 			),
 		),

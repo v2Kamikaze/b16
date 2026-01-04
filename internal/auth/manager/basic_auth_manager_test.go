@@ -5,81 +5,63 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	"github.com/v2code/b16/internal/auth"
 )
 
-func TestBasicAuthManager_Authenticate(t *testing.T) {
-	manager := NewBasicAuthManager(BasicAuthParams{
-		Username: "admin",
-		Password: "secret",
-	})
+type TestBasicAuthParams struct {
+	Name         string
+	SetupRequest func(r *http.Request)
+	ExpectedErr  error
+	ExpectedUser string
+	ExpectedPass string
+}
 
-	tests := []struct {
-		name         string
-		setupRequest func(r *http.Request)
-		expectError  bool
-		expectedUser string
-		expectedPass string
-	}{
+func TestBasicAuthManager_Authenticate(t *testing.T) {
+	manager := NewBasicAuthManager("admin", "secret")
+
+	cases := []TestBasicAuthParams{
 		{
-			name: "no basic auth header",
-			setupRequest: func(r *http.Request) {
-				// nada
-			},
-			expectError: true,
+			Name:         "no basic auth header",
+			SetupRequest: func(r *http.Request) {},
+			ExpectedErr:  auth.ErrUnauthorized,
 		},
 		{
-			name: "invalid credentials",
-			setupRequest: func(r *http.Request) {
+			Name: "invalid credentials",
+			SetupRequest: func(r *http.Request) {
 				r.SetBasicAuth("admin", "wrong")
 			},
-			expectError: true,
+			ExpectedErr: auth.ErrUnauthorized,
 		},
 		{
-			name: "valid credentials",
-			setupRequest: func(r *http.Request) {
+			Name: "valid credentials",
+			SetupRequest: func(r *http.Request) {
 				r.SetBasicAuth("admin", "secret")
 			},
-			expectError:  false,
-			expectedUser: "admin",
-			expectedPass: "secret",
+			ExpectedErr:  nil,
+			ExpectedUser: "admin",
+			ExpectedPass: "secret",
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+	for _, tt := range cases {
+		t.Run(tt.Name, func(t *testing.T) {
 			req := httptest.NewRequest(http.MethodGet, "/", nil)
-			tt.setupRequest(req)
+			tt.SetupRequest(req)
 
 			cred, err := manager.Authenticate(req)
 
-			if tt.expectError {
-				if err == nil {
-					t.Fatalf("expected error, got nil")
-				}
-				if err != auth.ErrUnauthorized {
-					t.Fatalf("expected ErrUnauthorized, got %v", err)
-				}
+			if tt.ExpectedErr != nil {
+				require.ErrorIs(t, err, tt.ExpectedErr)
 				return
 			}
 
-			if err != nil {
-				t.Fatalf("unexpected error: %v", err)
-			}
-
-			if cred == nil {
-				t.Fatalf("expected credentials, got nil")
-			}
+			require.NoError(t, err)
+			require.NotNil(t, cred)
 
 			principal := cred.Principal()
-
-			if principal.Username != tt.expectedUser {
-				t.Errorf("expected username %q, got %q", tt.expectedUser, principal.Username)
-			}
-
-			if principal.Password != tt.expectedPass {
-				t.Errorf("expected password %q, got %q", tt.expectedPass, principal.Password)
-			}
+			require.Equal(t, tt.ExpectedUser, principal.Username)
+			require.Equal(t, tt.ExpectedPass, principal.Password)
 		})
 	}
 }

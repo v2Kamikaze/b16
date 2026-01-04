@@ -12,13 +12,8 @@ type BasicAuthManager struct {
 	password string
 }
 
-type BasicAuthParams struct {
-	Username string
-	Password string
-}
-
-func NewBasicAuthManager(params BasicAuthParams) domain.AuthManager[*BasicAuthPrincipal] {
-	return &BasicAuthManager{username: params.Username, password: params.Password}
+func NewBasicAuthManager(username, password string) domain.AuthManager[*BasicAuthPrincipal] {
+	return &BasicAuthManager{username: username, password: password}
 }
 
 type BasicAuthPrincipal struct {

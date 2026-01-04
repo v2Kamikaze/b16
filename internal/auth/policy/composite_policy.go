@@ -7,11 +7,6 @@ type CompositePolicy[T any] struct {
 }
 
 func NewCompositePolicy[T any](policies ...domain.Policy[T]) domain.Policy[T] {
-
-	if len(policies) == 0 {
-		panic("composite policy requires at least one policy")
-	}
-
 	return &CompositePolicy[T]{policies: policies}
 }
 

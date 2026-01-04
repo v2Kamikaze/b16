@@ -14,17 +14,11 @@ func NewAnyPolicy[T any](policies ...domain.Policy[T]) domain.Policy[T] {
 }
 
 func (a *AnyPolicy[T]) Check(credentials domain.Principal[T]) error {
-	var err error
-
 	for _, p := range a.policies {
-		if err = p.Check(credentials); err == nil {
+		if err := p.Check(credentials); err == nil {
 			return nil
 		}
 	}
 
-	if err == nil {
-		return auth.ErrForbidden
-	}
-
-	return err
+	return auth.ErrForbidden
 }

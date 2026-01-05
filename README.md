@@ -62,9 +62,9 @@ flowchart LR
     WithAuth --> AuthManager
     AuthManager --> Principal
 
-    Principal --> Policy
-    Policy --> WithPolicy
-    WithPolicy --> Handler
+    Principal --> WithPolicy
+    WithPolicy --> Policy
+    Policy --> Handler
     Handler --> Res
 ```
 

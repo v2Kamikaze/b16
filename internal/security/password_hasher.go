@@ -1,7 +1,6 @@
 package security
 
 import (
-	"github.com/v2code/b16/internal/domain"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -9,7 +8,7 @@ type BCryptPasswordHasher struct {
 	cost int
 }
 
-func NewBCryptPasswordHasher(cost int) domain.PasswordHasher {
+func NewBCryptPasswordHasher(cost int) PasswordHasher {
 	return &BCryptPasswordHasher{
 		cost: cost,
 	}

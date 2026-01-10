@@ -5,15 +5,14 @@ import (
 	"strings"
 
 	"github.com/v2code/b16/internal/auth"
-	"github.com/v2code/b16/internal/domain"
 	"github.com/v2code/b16/internal/security"
 )
 
 type TokenAuthManager struct {
-	jwtIssuer domain.TokenIssuer[*security.Claims]
+	jwtIssuer security.TokenIssuer[*security.Claims]
 }
 
-func NewTokenAuthManager(jwtIssuer domain.TokenIssuer[*security.Claims]) *TokenAuthManager {
+func NewTokenAuthManager(jwtIssuer security.TokenIssuer[*security.Claims]) *TokenAuthManager {
 	return &TokenAuthManager{
 		jwtIssuer: jwtIssuer,
 	}

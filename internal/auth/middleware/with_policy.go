@@ -3,12 +3,12 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/v2code/b16/internal/domain"
+	"github.com/v2code/b16/internal/auth"
 )
 
-func WithPolicy[T any](handler domain.AuthHandler[T], policy domain.Policy[T]) domain.AuthHandler[T] {
+func WithPolicy[T any](handler auth.AuthHandler[T], policy auth.Policy[T]) auth.AuthHandler[T] {
 
-	return func(w http.ResponseWriter, r *http.Request, principal domain.Principal[T]) {
+	return func(w http.ResponseWriter, r *http.Request, principal auth.Principal[T]) {
 
 		if err := policy.Check(principal); err != nil {
 			http.Error(w, err.Error(), http.StatusForbidden)

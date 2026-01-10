@@ -5,19 +5,19 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/v2code/b16/internal/auth"
 	"github.com/v2code/b16/internal/auth/manager"
 	"github.com/v2code/b16/internal/auth/middleware"
 	"github.com/v2code/b16/internal/auth/policy"
 	"github.com/v2code/b16/internal/config"
-	"github.com/v2code/b16/internal/domain"
 	"github.com/v2code/b16/internal/security"
 )
 
-func BasicAuthHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.BasicAuthPrincipal]) {
+func BasicAuthHandler(w http.ResponseWriter, r *http.Request, principal auth.Principal[*manager.BasicAuthPrincipal]) {
 	fmt.Fprintf(w, "Hello %v", principal.Principal().Username)
 }
 
-func TokenAuthHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.TokenPrincipal]) {
+func TokenAuthHandler(w http.ResponseWriter, r *http.Request, principal auth.Principal[*manager.TokenPrincipal]) {
 	fmt.Fprintf(w, "Hello %v", principal.Principal().Email)
 }
 

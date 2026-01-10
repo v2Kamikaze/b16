@@ -27,7 +27,7 @@ func (p *TokenPrincipal) Principal() *TokenPrincipal {
 	return p
 }
 
-func (m *TokenAuthManager) Authenticate(req *http.Request) (domain.Principal[*TokenPrincipal], error) {
+func (m *TokenAuthManager) Authenticate(req *http.Request) (auth.Principal[*TokenPrincipal], error) {
 
 	authorization := req.Header.Get("Authorization")
 	if authorization == "" {

@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/v2code/b16/internal/auth"
-	"github.com/v2code/b16/internal/domain"
 )
 
 func TestCompositePolicy_Check(t *testing.T) {
@@ -16,12 +15,12 @@ func TestCompositePolicy_Check(t *testing.T) {
 	tests := []TestPolicyParams{
 		{
 			Name:      "all policy succeeds",
-			Policies:  []domain.Policy[*dummyPrincipal]{success},
+			Policies:  []auth.Policy[*dummyPrincipal]{success},
 			ExpectErr: nil,
 		},
 		{
 			Name:      "one policy fails",
-			Policies:  []domain.Policy[*dummyPrincipal]{success, fail},
+			Policies:  []auth.Policy[*dummyPrincipal]{success, fail},
 			ExpectErr: auth.ErrForbidden,
 		},
 	}

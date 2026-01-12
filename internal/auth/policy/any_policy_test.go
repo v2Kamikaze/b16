@@ -5,12 +5,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/v2code/b16/internal/auth"
-	"github.com/v2code/b16/internal/domain"
 )
 
 type TestPolicyParams struct {
 	Name      string
-	Policies  []domain.Policy[*dummyPrincipal]
+	Policies  []auth.Policy[*dummyPrincipal]
 	ExpectErr error
 }
 
@@ -22,22 +21,22 @@ func TestAnyPolicy_Check(t *testing.T) {
 	tests := []TestPolicyParams{
 		{
 			Name:      "one policy succeeds",
-			Policies:  []domain.Policy[*dummyPrincipal]{success},
+			Policies:  []auth.Policy[*dummyPrincipal]{success},
 			ExpectErr: nil,
 		},
 		{
 			Name:      "first fails second succeeds",
-			Policies:  []domain.Policy[*dummyPrincipal]{fail, success},
+			Policies:  []auth.Policy[*dummyPrincipal]{fail, success},
 			ExpectErr: nil,
 		},
 		{
 			Name:      "all policies fail",
-			Policies:  []domain.Policy[*dummyPrincipal]{fail, fail},
+			Policies:  []auth.Policy[*dummyPrincipal]{fail, fail},
 			ExpectErr: auth.ErrForbidden,
 		},
 		{
 			Name:      "no policies configured",
-			Policies:  []domain.Policy[*dummyPrincipal]{},
+			Policies:  []auth.Policy[*dummyPrincipal]{},
 			ExpectErr: auth.ErrForbidden,
 		},
 	}

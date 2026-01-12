@@ -1,8 +1,6 @@
 package policy
 
-import (
-	"github.com/v2code/b16/internal/domain"
-)
+import "github.com/v2code/b16/internal/auth"
 
 type dummyPrincipal struct{}
 
@@ -14,6 +12,6 @@ type fakePolicy[T any] struct {
 	err error
 }
 
-func (p *fakePolicy[T]) Check(principal domain.Principal[T]) error {
+func (p *fakePolicy[T]) Check(principal auth.Principal[T]) error {
 	return p.err
 }

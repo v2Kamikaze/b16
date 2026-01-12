@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/v2code/b16/internal/domain"
 )
 
 var (
@@ -37,7 +36,7 @@ type JwtIssuerParams struct {
 	Issuer    string
 }
 
-func NewJwtIssuer(params JwtIssuerParams) domain.TokenIssuer[*Claims] {
+func NewJwtIssuer(params JwtIssuerParams) TokenIssuer[*Claims] {
 	return &JwtIssuer{
 		secretKey:     params.SecretKey,
 		expireAt:      params.ExpireAt,

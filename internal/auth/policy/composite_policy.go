@@ -2,18 +2,17 @@ package policy
 
 import (
 	"github.com/v2code/b16/internal/auth"
-	"github.com/v2code/b16/internal/domain"
 )
 
 type CompositePolicy[T any] struct {
-	policies []domain.Policy[T]
+	policies []auth.Policy[T]
 }
 
-func NewCompositePolicy[T any](policies ...domain.Policy[T]) domain.Policy[T] {
+func NewCompositePolicy[T any](policies ...auth.Policy[T]) auth.Policy[T] {
 	return &CompositePolicy[T]{policies: policies}
 }
 
-func (a *CompositePolicy[T]) Check(principal domain.Principal[T]) error {
+func (a *CompositePolicy[T]) Check(principal auth.Principal[T]) error {
 
 	for _, p := range a.policies {
 		if err := p.Check(principal); err != nil {

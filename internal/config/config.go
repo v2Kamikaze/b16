@@ -2,11 +2,11 @@ package config
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"strconv"
 
 	"github.com/joho/godotenv"
+	"github.com/v2code/b16/internal/logger"
 )
 
 type BasicAuth struct {
@@ -25,7 +25,7 @@ type Environment struct {
 func LoadEnvironment() *Environment {
 	err := godotenv.Load()
 	if err != nil {
-		log.Println("error while loading env: ", err.Error())
+		logger.Debug("error while loading env: ", err.Error())
 	}
 
 	env := &Environment{}
@@ -44,7 +44,7 @@ func LoadEnvironment() *Environment {
 func ParseInt(value string) int {
 	parsedValue, err := strconv.Atoi(value)
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 	return parsedValue
 }

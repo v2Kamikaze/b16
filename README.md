@@ -141,7 +141,7 @@ func (p *MyPrincipal) Principal() *MyPrincipal {
 
 ### Criando um Manager
 
-Um `Manager` implementa a interface `domain.AuthManager[T]` e é responsável por extrair e validar a autenticação da requisição HTTP, retornando um Principal.
+Um `Manager` implementa a interface `auth.AuthManager[T]` e é responsável por extrair e validar a autenticação da requisição HTTP, retornando um Principal.
 
 **Exemplo - Custom Manager:**
 
@@ -151,7 +151,6 @@ package manager
 import (
     "net/http"
     "github.com/v2code/b16/internal/auth"
-    "github.com/v2code/b16/internal/domain"
 )
 
 type MyAuthManager struct {
@@ -159,11 +158,11 @@ type MyAuthManager struct {
     apiKey string
 }
 
-func NewMyAuthManager(apiKey string) domain.AuthManager[*MyPrincipal] {
+func NewMyAuthManager(apiKey string) auth.AuthManager[*MyPrincipal] {
     return &MyAuthManager{apiKey: apiKey}
 }
 
-func (m *MyAuthManager) Authenticate(req *http.Request) (domain.Principal[*MyPrincipal], error) {
+func (m *MyAuthManager) Authenticate(req *http.Request) (auth.Principal[*MyPrincipal], error) {
     // Extrai informações do header, query params, etc.
     apiKey := req.Header.Get("X-API-Key")
     if apiKey == "" {
@@ -206,7 +205,7 @@ func (m *MyAuthManager) Authenticate(req *http.Request) (domain.Principal[*MyPri
 
 ### Criando uma Policy
 
-Uma `Policy` implementa a interface `domain.Policy[T]` e verifica se um `Principal` atende aos critérios de autorização.
+Uma `Policy` implementa a interface `auth.Policy[T]` e verifica se um `Principal` atende aos critérios de autorização.
 
 **Exemplo - Custom Policy:**
 
@@ -223,11 +222,11 @@ type RequireEmailDomain struct {
     domain string
 }
 
-func NewRequireEmailDomainPolicy(domain string) domain.Policy[*manager.TokenPrincipal] {
+func NewRequireEmailDomainPolicy(domain string) auth.Policy[*manager.TokenPrincipal] {
     return &RequireEmailDomain{domain: domain}
 }
 
-func (p *RequireEmailDomain) Check(principal domain.Principal[*manager.TokenPrincipal]) error {
+func (p *RequireEmailDomain) Check(principal auth.Principal[*manager.TokenPrincipal]) error {
     email := principal.Principal().Email
     // Verifica se o email termina com o domínio requerido
     if !strings.HasSuffix(email, "@"+p.domain) {
@@ -267,7 +266,7 @@ Um `Handler` é uma função que processa requisições autenticadas. Recebe o `
 **Exemplo:**
 
 ```go
-func MyHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.MyPrincipal]) {
+func MyHandler(w http.ResponseWriter, r *http.Request, principal auth.Principal[*manager.MyPrincipal]) {
     p := principal.Principal()
 
     // Acessa os dados do principal
@@ -284,7 +283,7 @@ func MyHandler(w http.ResponseWriter, r *http.Request, principal domain.Principa
 ### Exemplo 1: Endpoint com Basic Auth
 
 ```go
-func BasicAuthHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.BasicAuthPrincipal]) {
+func BasicAuthHandler(w http.ResponseWriter, r *http.Request, principal auth.Principal[*manager.BasicAuthPrincipal]) {
     p := principal.Principal()
     fmt.Fprintf(w, "Hello %s", p.Username)
 }
@@ -300,7 +299,7 @@ func main() {
         "GET /basic-auth",
         middleware.WithAuth(basicAuthManager, BasicAuthHandler),
     )
-
+    
     http.ListenAndServe(":8000", mux)
 }
 ```
@@ -313,7 +312,7 @@ curl -u admin:password http://localhost:8000/basic-auth
 ### Exemplo 2: Endpoint com Token Auth e Policy de Role
 
 ```go
-func TokenAuthHandler(w http.ResponseWriter, r *http.Request, principal domain.Principal[*manager.TokenPrincipal]) {
+func TokenAuthHandler(w http.ResponseWriter, r *http.Request, principal auth.Principal[*manager.TokenPrincipal]) {
     p := principal.Principal()
     fmt.Fprintf(w, "Hello %s", p.Email)
 }
@@ -411,11 +410,11 @@ type APIKeyManager struct {
     validKeys map[string]string // API Key -> User ID
 }
 
-func NewAPIKeyManager(validKeys map[string]string) domain.AuthManager[*APIKeyPrincipal] {
+func NewAPIKeyManager(validKeys map[string]string) auth.AuthManager[*APIKeyPrincipal] {
     return &APIKeyManager{validKeys: validKeys}
 }
 
-func (m *APIKeyManager) Authenticate(req *http.Request) (domain.Principal[*APIKeyPrincipal], error) {
+func (m *APIKeyManager) Authenticate(req *http.Request) (auth.Principal[*APIKeyPrincipal], error) {
     apiKey := req.Header.Get("X-API-Key")
     if apiKey == "" {
         return nil, auth.ErrUnauthorized

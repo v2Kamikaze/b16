@@ -11,6 +11,7 @@ import (
 	"github.com/v2code/b16/internal/auth/policy"
 	"github.com/v2code/b16/internal/config"
 	"github.com/v2code/b16/internal/logger"
+	"github.com/v2code/b16/internal/mailer"
 	"github.com/v2code/b16/internal/security"
 )
 
@@ -63,6 +64,21 @@ func main() {
 	)
 
 	logger.Debug("server is running", "url", "http://0.0.0.0:8000")
+
+	m := mailer.NewMailer(mailer.MailerParams{
+		Host:     "localhost",
+		Port:     1025,
+		From:     "b16@email.com",
+		Username: "",
+		Password: "",
+	})
+
+	body := mailer.RenderVerificationCodeTemplate("123456")
+
+	err := m.SendMail("recipient@example.com", body)
+	if err != nil {
+		logger.Error("failed to send email", "error", err)
+	}
 
 	http.ListenAndServe(":8000", mux)
 }

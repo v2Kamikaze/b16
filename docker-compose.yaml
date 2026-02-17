@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+    db:
+        image: postgres:15-alpine
+        container_name: b16-postgres
+        environment:
+            POSTGRES_USER: password
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: password
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+
+    mail:
+        image: mailhog/mailhog:latest
+        container_name: b16-mailhog
+        platform: linux/amd64
+        ports:
+            - "1025:1025"
+            - "8025:8025"
+
+volumes:
+    postgres_data:

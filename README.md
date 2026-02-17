@@ -14,7 +14,6 @@
 
 ## Arquitetura
 
-
 ```
 b16/
 ├── internal/
@@ -40,7 +39,6 @@ b16/
 │   │   └── password_hasher.go   # Hash de senhas
 │   └── config/                  # Configuração da aplicação
 │       └── config.go
-└── main.go                      # Aplicação principal
 ```
 
 ### Fluxo de Autenticação e Autorização

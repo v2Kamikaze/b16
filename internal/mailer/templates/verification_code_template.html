@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Código de Verificação</title>
+    </head>
+    <body
+        style="
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #0b0b0e;
+            color: #ffd9a0;
+        "
+    >
+        <div
+            style="
+                text-align: center;
+                margin-top: 20px;
+                font-size: 28px;
+                font-weight: bold;
+                color: #ff4c00;
+            "
+        >
+            B16
+        </div>
+        <table
+            role="presentation"
+            style="width: 100%; border-collapse: collapse"
+        >
+            <tr>
+                <td style="padding: 20px 0; text-align: center">
+                    <table
+                        role="presentation"
+                        style="
+                            width: 600px;
+                            margin: 0 auto;
+                            background-color: #1a1a1a;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+                            border: 1px solid #2a2a2a;
+                        "
+                    >
+                        <tr>
+                            <td style="padding: 40px 30px; text-align: center">
+                                <h1
+                                    style="
+                                        margin: 0 0 20px 0;
+                                        color: #ff4c00;
+                                        font-size: 24px;
+                                    "
+                                >
+                                    Código de Verificação
+                                </h1>
+                                <p
+                                    style="
+                                        margin: 0 0 30px 0;
+                                        color: #ffd9a0;
+                                        font-size: 16px;
+                                        line-height: 1.5;
+                                    "
+                                >
+                                    Olá!<br />
+                                    Use o código abaixo para verificar sua
+                                    conta:
+                                </p>
+                                <div
+                                    style="
+                                        background-color: #101010;
+                                        border: 2px dashed #ff4c00;
+                                        border-radius: 8px;
+                                        padding: 20px;
+                                        margin: 30px 0;
+                                    "
+                                >
+                                    <p
+                                        style="
+                                            margin: 0;
+                                            font-size: 32px;
+                                            font-weight: bold;
+                                            letter-spacing: 8px;
+                                            color: #ff8c00;
+                                            font-family:
+                                                &quot;Courier New&quot;,
+                                                monospace;
+                                        "
+                                    >
+                                        {{ .Code }}
+                                    </p>
+                                </div>
+                                <p
+                                    style="
+                                        margin: 30px 0 0 0;
+                                        color: #b58b5a;
+                                        font-size: 14px;
+                                        line-height: 1.5;
+                                    "
+                                >
+                                    Este código expira em 10 minutos.<br />
+                                    Se você não solicitou este código, ignore
+                                    este email.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

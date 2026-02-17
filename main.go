@@ -65,17 +65,19 @@ func main() {
 
 	logger.Debug("server is running", "url", "http://0.0.0.0:8000")
 
-	m := mailer.NewMailer(mailer.MailerParams{
+	c := mailer.NewDefaultClient()
+
+	m := mailer.NewDefaultMailer(mailer.MailerParams{
 		Host:     "localhost",
 		Port:     1025,
 		From:     "b16@email.com",
 		Username: "",
 		Password: "",
-	})
+	}, c)
 
 	body := mailer.RenderVerificationCodeTemplate("123456")
 
-	err := m.SendMail("recipient@example.com", body)
+	err := m.Send("Verification Code", body, "recipient@example.com")
 	if err != nil {
 		logger.Error("failed to send email", "error", err)
 	}
